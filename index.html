@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emploi by VCG — Reverse Recruiting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12131A;
+    --ink-soft:#1B1D29;
+    --paper:#F7F5F1;
+    --paper-dim:#EDEAE3;
+    --amber:#FFB400;
+    --amber-dim:#7A5C00;
+    --slate:#8A8FA3;
+    --line:#2B2D38;
+    --line-light:#DEDAD0;
+    --good:#3FAE6A;
+    --r-sm:6px;
+    --r-md:10px;
+    --r-lg:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    line-height:1.05;
+    margin:0;
+  }
+  .mono{font-family:'JetBrains Mono',monospace; letter-spacing:0.02em;}
+  a{color:inherit;}
+  ::selection{background:var(--amber); color:var(--ink);}
+
+  /* ---------- top nav ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 32px;
+    background:rgba(18,19,26,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-size:19px; font-weight:600;}
+  .brand .mark{
+    width:28px; height:28px; border-radius:7px;
+    background:var(--amber); color:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px;
+  }
+  .brand .sub{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--slate); letter-spacing:0.08em; text-transform:uppercase; font-weight:500;}
+  .nav-links{display:flex; gap:6px;}
+  .nav-btn{
+    font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.03em;
+    padding:9px 16px; border-radius:999px; cursor:pointer;
+    border:1px solid transparent; background:transparent; color:var(--slate);
+    transition:all .18s ease;
+  }
+  .nav-btn:hover{color:var(--paper);}
+  .nav-btn.active{background:var(--paper); color:var(--ink); border-color:var(--paper);}
+
+  /* ---------- hero ---------- */
+  .hero{
+    padding:110px 32px 90px;
+    max-width:1100px; margin:0 auto;
+    position:relative;
+  }
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--amber);
+    text-transform:uppercase; letter-spacing:0.14em; margin-bottom:22px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .eyebrow::before{content:""; width:24px; height:1px; background:var(--amber);}
+  .hero h1{font-size:clamp(40px,6vw,76px); max-width:780px;}
+  .hero h1 .strike{position:relative; color:var(--slate);}
+  .hero h1 .strike::after{
+    content:""; position:absolute; left:0; right:0; top:52%; height:2px; background:var(--slate); opacity:.6;
+    transform:rotate(-2deg);
+  }
+  .hero p.lede{
+    font-size:18px; color:var(--slate); max-width:540px; margin-top:24px; line-height:1.6;
+  }
+  .hero-cta{display:flex; gap:14px; margin-top:38px; flex-wrap:wrap;}
+  .btn{
+    font-family:'Inter',sans-serif; font-weight:600; font-size:14.5px;
+    padding:14px 26px; border-radius:999px; cursor:pointer; border:none;
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .btn-primary{background:var(--amber); color:var(--ink);}
+  .btn-primary:hover{transform:translateY(-2px); box-shadow:0 10px 26px -8px rgba(255,180,0,0.5);}
+  .btn-ghost{background:transparent; color:var(--paper); border:1px solid var(--line); }
+  .btn-ghost:hover{border-color:var(--paper);}
+
+  /* path diagram */
+  .path-row{
+    display:flex; align-items:stretch; gap:0; margin-top:64px;
+    border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden;
+  }
+  .path-cell{
+    flex:1; padding:26px 24px; position:relative;
+  }
+  .path-cell + .path-cell{border-left:1px solid var(--line);}
+  .path-cell .tag{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--slate); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:10px; display:block;}
+  .path-cell.problem .tag{color:#E0664B;}
+  .path-cell.path .tag{color:var(--good);}
+  .path-cell p{margin:0; font-size:15px; color:var(--paper); line-height:1.5;}
+  .path-arrow{
+    display:flex; align-items:center; justify-content:center; padding:0 6px;
+    color:var(--slate); font-size:20px; background:var(--ink-soft);
+  }
+
+  /* ---------- sections shared ---------- */
+  .section{max-width:1100px; margin:0 auto; padding:80px 32px;}
+  .section-head{margin-bottom:48px; max-width:600px;}
+  .section-head .eyebrow{margin-bottom:14px;}
+  .section-head h2{font-size:clamp(28px,3.4vw,42px);}
+  .section-head p{color:var(--slate); margin-top:14px; font-size:15.5px; line-height:1.6;}
+
+  .pillars{display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--r-lg); overflow:hidden;}
+  .pillar{background:var(--ink); padding:30px 26px; transition:background .2s ease;}
+  .pillar:hover{background:var(--ink-soft);}
+  .pillar .num{font-family:'JetBrains Mono',monospace; color:var(--amber); font-size:12px; margin-bottom:14px; display:block;}
+  .pillar h3{font-size:19px; margin-bottom:8px;}
+  .pillar p{color:var(--slate); font-size:13.5px; line-height:1.55; margin:0;}
+
+  /* ---------- portals ---------- */
+  .portal-section{display:none;}
+  .portal-section.active{display:block;}
+  .portal-hero{
+    padding:60px 32px 20px; max-width:1100px; margin:0 auto;
+  }
+  .portal-hero .eyebrow{margin-bottom:16px;}
+  .portal-hero h1{font-size:clamp(32px,4.4vw,52px); max-width:680px;}
+  .portal-hero p{color:var(--slate); max-width:520px; margin-top:16px; font-size:16px; line-height:1.6;}
+
+  .grid-2{display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; max-width:1100px; margin:0 auto; padding:20px 32px 100px; align-items:start;}
+  @media(max-width:880px){ .grid-2{grid-template-columns:1fr;} .pillars{grid-template-columns:1fr;} .path-row{flex-direction:column;} .path-cell+.path-cell{border-left:none; border-top:1px solid var(--line);} .path-arrow{padding:10px 0;} }
+
+  .card{
+    background:var(--ink-soft); border:1px solid var(--line); border-radius:var(--r-lg);
+    padding:32px;
+  }
+  .card h3{font-size:20px; margin-bottom:6px;}
+  .card .hint{color:var(--slate); font-size:13.5px; margin-bottom:26px;}
+
+  label{display:block; font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--slate); margin-bottom:8px; margin-top:18px;}
+  label:first-of-type{margin-top:0;}
+  input[type=text], input[type=email], input[type=tel], input[type=url], textarea, select{
+    width:100%; background:var(--ink); border:1px solid var(--line); color:var(--paper);
+    padding:12px 14px; border-radius:var(--r-sm); font-family:'Inter',sans-serif; font-size:14.5px;
+    outline:none; transition:border-color .15s ease;
+  }
+  input:focus, textarea:focus, select:focus{border-color:var(--amber);}
+  textarea{resize:vertical; min-height:90px; font-family:'Inter',sans-serif;}
+  select{appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238A8FA3'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center;}
+
+  .file-drop{
+    border:1.5px dashed var(--line); border-radius:var(--r-md); padding:22px;
+    text-align:center; cursor:pointer; transition:border-color .15s ease, background .15s ease;
+    margin-top:0;
+  }
+  .file-drop:hover, .file-drop.drag{border-color:var(--amber); background:rgba(255,180,0,0.04);}
+  .file-drop input{display:none;}
+  .file-drop .fd-icon{font-size:22px; margin-bottom:6px;}
+  .file-drop .fd-text{font-size:13.5px; color:var(--paper);}
+  .file-drop .fd-sub{font-size:11.5px; color:var(--slate); margin-top:4px; font-family:'JetBrains Mono',monospace;}
+  .file-drop.has-file{border-color:var(--good); background:rgba(63,174,106,0.06);}
+  .file-drop.has-file .fd-text{color:var(--good);}
+
+  .submit-row{display:flex; align-items:center; gap:14px; margin-top:28px;}
+  .form-msg{font-size:12.5px; font-family:'JetBrains Mono',monospace; color:var(--good); opacity:0; transition:opacity .2s ease;}
+  .form-msg.show{opacity:1;}
+
+  /* side feed */
+  .feed-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+  .feed-head h3{font-size:16px;}
+  .feed-count{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--slate); background:var(--ink); border:1px solid var(--line); padding:4px 10px; border-radius:999px;}
+  .feed-list{display:flex; flex-direction:column; gap:12px; max-height:560px; overflow-y:auto; padding-right:4px;}
+  .feed-list::-webkit-scrollbar{width:5px;}
+  .feed-list::-webkit-scrollbar-thumb{background:var(--line); border-radius:10px;}
+  .feed-item{
+    border:1px solid var(--line); border-radius:var(--r-md); padding:16px 18px; background:var(--ink);
+  }
+  .feed-item .fi-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .feed-item h4{font-size:14.5px; font-weight:600; margin:0; font-family:'Inter',sans-serif;}
+  .feed-item .fi-meta{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--slate); margin-top:3px;}
+  .feed-item .fi-body{font-size:13px; color:#C8C5BC; margin-top:10px; line-height:1.5;}
+  .badge{font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 9px; border-radius:999px; white-space:nowrap; text-transform:uppercase; letter-spacing:0.04em;}
+  .badge.amber{background:rgba(255,180,0,0.12); color:var(--amber); border:1px solid rgba(255,180,0,0.3);}
+  .badge.good{background:rgba(63,174,106,0.12); color:var(--good); border:1px solid rgba(63,174,106,0.3);}
+  .badge.slate{background:rgba(138,143,163,0.12); color:var(--slate); border:1px solid rgba(138,143,163,0.3);}
+  .empty-state{text-align:center; padding:50px 20px; color:var(--slate); font-size:13.5px;}
+  .empty-state .ee-icon{font-size:26px; margin-bottom:10px; opacity:.6;}
+
+  .resume-link{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--amber); text-decoration:none; display:inline-flex; align-items:center; gap:5px; margin-top:8px;}
+  .resume-link:hover{text-decoration:underline;}
+
+  footer{border-top:1px solid var(--line); padding:34px 32px; text-align:center;}
+  footer .mono{font-size:11.5px; color:var(--slate);}
+
+  .toast{
+    position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--paper); color:var(--ink); padding:13px 22px; border-radius:999px;
+    font-size:13.5px; font-weight:600; opacity:0; pointer-events:none; transition:all .25s ease;
+    z-index:200; box-shadow:0 14px 30px -10px rgba(0,0,0,0.5); display:flex; align-items:center; gap:8px;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  .toast .dot{width:7px; height:7px; border-radius:50%; background:var(--good);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="mark">VCG</div>
+    <div>Emploi<div class="sub">Reverse Recruiting</div></div>
+  </div>
+  <div class="nav-links">
+    <button class="nav-btn active" data-view="home">Home</button>
+    <button class="nav-btn" data-view="candidate">Candidate</button>
+    <button class="nav-btn" data-view="client">Client</button>
+    <button class="nav-btn" data-view="employee">Employee</button>
+  </div>
+</div>
+
+<!-- ============ HOME ============ -->
+<section class="portal-section active" id="view-home">
+  <div class="hero">
+    <div class="eyebrow">Reverse Recruiting</div>
+    <h1>Are you stuck in your <span class="strike">career?</span></h1>
+    <p class="lede">You've been applying, waiting, and hoping — but nothing's moving. Emploi by VCG does the heavy lifting for you: a dedicated recruiter working your search every day.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" data-view="candidate">Submit my resume</button>
+      <button class="btn btn-ghost" data-view="client">Post a job</button>
+      <button class="btn btn-ghost" data-view="employee">Submit a referral</button>
+    </div>
+
+    <div class="path-row">
+      <div class="path-cell problem">
+        <span class="tag">✕ The problem</span>
+        <p>Endless applications. No responses. Wrong opportunities.</p>
+      </div>
+      <div class="path-arrow">→</div>
+      <div class="path-cell path">
+        <span class="tag">✓ The path forward</span>
+        <p>A dedicated recruiter working on your behalf, every day.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="eyebrow">Six pillars</div>
+      <h2>What powers your search</h2>
+      <p>So you don't have to go it alone — every touchpoint is intentional.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar"><span class="num">01</span><h3>Market Mapping</h3><p>The exact companies, teams, and decision-makers aligned with your skills and ambitions.</p></div>
+      <div class="pillar"><span class="num">02</span><h3>Market Insights</h3><p>Real intelligence on salary benchmarks, demand by sector, and where the market is heading.</p></div>
+      <div class="pillar"><span class="num">03</span><h3>Target Approach</h3><p>Personalized outreach to the right hiring managers — direct, strategic, never generic.</p></div>
+      <div class="pillar"><span class="num">04</span><h3>Role Fit</h3><p>Matched to your values, work style, and long-term ambitions — not just what's available.</p></div>
+      <div class="pillar"><span class="num">05</span><h3>Referral</h3><p>Warm introductions from people inside, opening doors that cold applications can't.</p></div>
+      <div class="pillar"><span class="num">06</span><h3>Global Outreach</h3><p>Your search extended across geographies and industries, always negotiating for more.</p></div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:0;">
+    <div class="section-head">
+      <div class="eyebrow">Three ways in</div>
+      <h2>Pick your path</h2>
+    </div>
+    <div class="pillars" style="grid-template-columns:repeat(3,1fr);">
+      <div class="pillar" style="cursor:pointer;" data-view="candidate">
+        <span class="num">Candidates</span>
+        <h3>Attach your resume</h3>
+        <p>Get matched and let a dedicated recruiter work your search.</p>
+      </div>
+      <div class="pillar" style="cursor:pointer;" data-view="client">
+        <span class="num">Clients</span>
+        <h3>Post a role</h3>
+        <p>Tell us who you need — we'll source candidates aligned to the brief.</p>
+      </div>
+      <div class="pillar" style="cursor:pointer;" data-view="employee">
+        <span class="num">Employees</span>
+        <h3>Request a referral</h3>
+        <p>Flag a role you'd vouch a contact for — earn referral credit.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CANDIDATE ============ -->
+<section class="portal-section" id="view-candidate">
+  <div class="portal-hero">
+    <div class="eyebrow">Candidate Portal</div>
+    <h1>Let's find your next role.</h1>
+    <p>Drop your resume and a few details. A dedicated recruiter reviews every submission — no black-box algorithm, no endless applications into the void.</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Submit your resume</h3>
+      <div class="hint">Takes about 2 minutes.</div>
+      <form id="form-candidate">
+        <label>Full name</label>
+        <input type="text" id="c-name" required placeholder="Jordan Avery">
+        <label>Email</label>
+        <input type="email" id="c-email" required placeholder="jordan@email.com">
+        <label>Phone</label>
+        <input type="tel" id="c-phone" placeholder="+1 (___) ___ ____">
+        <label>Current / most recent title</label>
+        <input type="text" id="c-title" required placeholder="Senior Product Manager">
+        <label>Target roles or industries</label>
+        <input type="text" id="c-target" placeholder="Fintech PM, B2B SaaS leadership">
+        <label>LinkedIn / portfolio URL</label>
+        <input type="url" id="c-link" placeholder="https://linkedin.com/in/...">
+        <label>Resume</label>
+        <div class="file-drop" id="c-drop">
+          <input type="file" id="c-file" accept=".pdf,.doc,.docx">
+          <div class="fd-icon">📄</div>
+          <div class="fd-text" id="c-drop-text">Click to upload or drag your resume here</div>
+          <div class="fd-sub">PDF or DOC, up to 8MB</div>
+        </div>
+        <label>Anything else we should know?</label>
+        <textarea id="c-notes" placeholder="Compensation expectations, timeline, must-haves..."></textarea>
+        <div class="submit-row">
+          <button type="submit" class="btn btn-primary">Submit resume</button>
+          <span class="form-msg" id="c-msg">✓ Submitted — we'll be in touch</span>
+        </div>
+      </form>
+    </div>
+    <div>
+      <div class="feed-head">
+        <h3>Recent candidates</h3>
+        <span class="feed-count" id="c-count">0</span>
+      </div>
+      <div class="feed-list" id="c-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CLIENT ============ -->
+<section class="portal-section" id="view-client">
+  <div class="portal-hero">
+    <div class="eyebrow">Client Portal</div>
+    <h1>Post a role. We'll map the market.</h1>
+    <p>Tell us who you're hiring for. We identify the companies, teams, and candidates aligned to your brief before a single application comes in.</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Post a job</h3>
+      <div class="hint">Visible to our recruiting team immediately.</div>
+      <form id="form-client">
+        <label>Company name</label>
+        <input type="text" id="j-company" required placeholder="Acme Inc.">
+        <label>Job title</label>
+        <input type="text" id="j-title" required placeholder="Director of Engineering">
+        <label>Department</label>
+        <input type="text" id="j-dept" placeholder="Engineering">
+        <label>Location</label>
+        <input type="text" id="j-location" placeholder="Remote · US, or City, Country">
+        <label>Employment type</label>
+        <select id="j-type">
+          <option>Full-time</option>
+          <option>Part-time</option>
+          <option>Contract</option>
+          <option>Fractional / Advisory</option>
+        </select>
+        <label>Salary range</label>
+        <input type="text" id="j-salary" placeholder="$150k – $190k + equity">
+        <label>Job description</label>
+        <textarea id="j-desc" required placeholder="Role summary, responsibilities, requirements..."></textarea>
+        <label>Hiring manager contact</label>
+        <input type="email" id="j-contact" required placeholder="hiring@company.com">
+        <div class="submit-row">
+          <button type="submit" class="btn btn-primary">Post job</button>
+          <span class="form-msg" id="j-msg">✓ Job posted</span>
+        </div>
+      </form>
+    </div>
+    <div>
+      <div class="feed-head">
+        <h3>Open roles</h3>
+        <span class="feed-count" id="j-count">0</span>
+      </div>
+      <div class="feed-list" id="j-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EMPLOYEE ============ -->
+<section class="portal-section" id="view-employee">
+  <div class="portal-hero">
+    <div class="eyebrow">Employee Portal</div>
+    <h1>Refer someone. Open a door.</h1>
+    <p>Warm introductions outperform cold applications every time. Flag a contact for an open role and we'll take it from there.</p>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>Submit a referral</h3>
+      <div class="hint">Your name stays attached so we can credit you.</div>
+      <form id="form-employee">
+        <label>Your name</label>
+        <input type="text" id="r-employee" required placeholder="Your full name">
+        <label>Your email</label>
+        <input type="email" id="r-employee-email" required placeholder="you@company.com">
+        <label>Referral's name</label>
+        <input type="text" id="r-name" required placeholder="Who are you referring?">
+        <label>Referral's email or phone</label>
+        <input type="text" id="r-contact" required placeholder="How can we reach them?">
+        <label>Role they're a fit for</label>
+        <input type="text" id="r-role" required placeholder="e.g. Senior Backend Engineer">
+        <label>Why are they a strong fit?</label>
+        <textarea id="r-notes" placeholder="Relevant background, how you know them..."></textarea>
+        <div class="submit-row">
+          <button type="submit" class="btn btn-primary">Submit referral</button>
+          <span class="form-msg" id="r-msg">✓ Referral submitted</span>
+        </div>
+      </form>
+    </div>
+    <div>
+      <div class="feed-head">
+        <h3>Referrals in motion</h3>
+        <span class="feed-count" id="r-count">0</span>
+      </div>
+      <div class="feed-list" id="r-list"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="mono">EMPLOI BY VCG · REVERSE RECRUITING · YOUR CAREER, ACCELERATED.</div>
+</footer>
+
+<div class="toast" id="toast"><span class="dot"></span><span id="toast-text">Saved</span></div>
+
+<script>
+// ---------- storage helpers ----------
+const STORE_KEYS = { candidates:'emploi_candidates', jobs:'emploi_jobs', referrals:'emploi_referrals' };
+function load(key){ try{ return JSON.parse(localStorage.getItem(key)) || []; }catch(e){ return []; } }
+function save(key, data){ localStorage.setItem(key, JSON.stringify(data)); }
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function timeAgo(ts){
+  const s = Math.floor((Date.now()-ts)/1000);
+  if(s<60) return 'just now';
+  if(s<3600) return Math.floor(s/60)+'m ago';
+  if(s<86400) return Math.floor(s/3600)+'h ago';
+  return Math.floor(s/86400)+'d ago';
+}
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+// ---------- nav ----------
+function setView(view){
+  document.querySelectorAll('.portal-section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('view-'+view).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+document.querySelectorAll('[data-view]').forEach(el=>{
+  el.addEventListener('click', ()=> setView(el.dataset.view));
+});
+
+// ---------- file drop (candidate resume) ----------
+const drop = document.getElementById('c-drop');
+const fileInput = document.getElementById('c-file');
+let resumeData = null; // {name, type, dataUrl}
+drop.addEventListener('click', ()=> fileInput.click());
+['dragover'].forEach(evt=> drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.add('drag'); }));
+['dragleave','drop'].forEach(evt=> drop.addEventListener(evt, e=>{ e.preventDefault(); drop.classList.remove('drag'); }));
+drop.addEventListener('drop', e=>{
+  if(e.dataTransfer.files.length){ fileInput.files = e.dataTransfer.files; handleFile(e.dataTransfer.files[0]); }
+});
+fileInput.addEventListener('change', e=>{ if(e.target.files.length) handleFile(e.target.files[0]); });
+function handleFile(file){
+  if(file.size > 8*1024*1024){ alert('File is larger than 8MB — please attach a smaller file.'); return; }
+  const reader = new FileReader();
+  reader.onload = e=>{
+    resumeData = { name:file.name, type:file.type, size:file.size, dataUrl:e.target.result };
+    drop.classList.add('has-file');
+    document.getElementById('c-drop-text').textContent = '✓ ' + file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ---------- candidate form ----------
+document.getElementById('form-candidate').addEventListener('submit', e=>{
+  e.preventDefault();
+  const list = load(STORE_KEYS.candidates);
+  list.unshift({
+    id: uid(),
+    name: document.getElementById('c-name').value,
+    email: document.getElementById('c-email').value,
+    phone: document.getElementById('c-phone').value,
+    title: document.getElementById('c-title').value,
+    target: document.getElementById('c-target').value,
+    link: document.getElementById('c-link').value,
+    notes: document.getElementById('c-notes').value,
+    resume: resumeData,
+    ts: Date.now()
+  });
+  save(STORE_KEYS.candidates, list);
+  e.target.reset();
+  resumeData = null;
+  drop.classList.remove('has-file');
+  document.getElementById('c-drop-text').textContent = 'Click to upload or drag your resume here';
+  flashMsg('c-msg');
+  renderCandidates();
+  showToast('Resume submitted');
+});
+
+// ---------- client form ----------
+document.getElementById('form-client').addEventListener('submit', e=>{
+  e.preventDefault();
+  const list = load(STORE_KEYS.jobs);
+  list.unshift({
+    id: uid(),
+    company: document.getElementById('j-company').value,
+    title: document.getElementById('j-title').value,
+    dept: document.getElementById('j-dept').value,
+    location: document.getElementById('j-location').value,
+    type: document.getElementById('j-type').value,
+    salary: document.getElementById('j-salary').value,
+    desc: document.getElementById('j-desc').value,
+    contact: document.getElementById('j-contact').value,
+    ts: Date.now()
+  });
+  save(STORE_KEYS.jobs, list);
+  e.target.reset();
+  flashMsg('j-msg');
+  renderJobs();
+  showToast('Job posted');
+});
+
+// ---------- employee referral form ----------
+document.getElementById('form-employee').addEventListener('submit', e=>{
+  e.preventDefault();
+  const list = load(STORE_KEYS.referrals);
+  list.unshift({
+    id: uid(),
+    employee: document.getElementById('r-employee').value,
+    employeeEmail: document.getElementById('r-employee-email').value,
+    name: document.getElementById('r-name').value,
+    contact: document.getElementById('r-contact').value,
+    role: document.getElementById('r-role').value,
+    notes: document.getElementById('r-notes').value,
+    ts: Date.now()
+  });
+  save(STORE_KEYS.referrals, list);
+  e.target.reset();
+  flashMsg('r-msg');
+  renderReferrals();
+  showToast('Referral submitted');
+});
+
+function flashMsg(id){
+  const el = document.getElementById(id);
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2600);
+}
+
+// ---------- renderers ----------
+function renderCandidates(){
+  const list = load(STORE_KEYS.candidates);
+  document.getElementById('c-count').textContent = list.length;
+  const el = document.getElementById('c-list');
+  if(!list.length){ el.innerHTML = emptyState('No candidates yet', 'Submissions will appear here in real time.'); return; }
+  el.innerHTML = list.map(c=>`
+    <div class="feed-item">
+      <div class="fi-top">
+        <div><h4>${esc(c.name)}</h4><div class="fi-meta">${esc(c.title||'—')} · ${timeAgo(c.ts)}</div></div>
+        <span class="badge amber">New</span>
+      </div>
+      <div class="fi-body">${esc(c.target || 'Target roles not specified')}</div>
+      ${c.resume ? `<a class="resume-link" download="${esc(c.resume.name)}" href="${c.resume.dataUrl}">↓ ${esc(c.resume.name)}</a>` : `<div class="fi-meta" style="margin-top:8px; color:#E0664B;">No resume attached</div>`}
+    </div>
+  `).join('');
+}
+function renderJobs(){
+  const list = load(STORE_KEYS.jobs);
+  document.getElementById('j-count').textContent = list.length;
+  const el = document.getElementById('j-list');
+  if(!list.length){ el.innerHTML = emptyState('No open roles yet', 'Posted jobs will appear here.'); return; }
+  el.innerHTML = list.map(j=>`
+    <div class="feed-item">
+      <div class="fi-top">
+        <div><h4>${esc(j.title)}</h4><div class="fi-meta">${esc(j.company)} · ${esc(j.location||'Location TBD')} · ${timeAgo(j.ts)}</div></div>
+        <span class="badge good">${esc(j.type||'Full-time')}</span>
+      </div>
+      <div class="fi-body">${esc(j.desc).slice(0,140)}${j.desc.length>140?'…':''}</div>
+      ${j.salary ? `<div class="fi-meta" style="margin-top:8px;">${esc(j.salary)}</div>` : ''}
+    </div>
+  `).join('');
+}
+function renderReferrals(){
+  const list = load(STORE_KEYS.referrals);
+  document.getElementById('r-count').textContent = list.length;
+  const el = document.getElementById('r-list');
+  if(!list.length){ el.innerHTML = emptyState('No referrals yet', 'Employee referrals will appear here.'); return; }
+  el.innerHTML = list.map(r=>`
+    <div class="feed-item">
+      <div class="fi-top">
+        <div><h4>${esc(r.name)}</h4><div class="fi-meta">for ${esc(r.role)} · referred by ${esc(r.employee)} · ${timeAgo(r.ts)}</div></div>
+        <span class="badge slate">Pending</span>
+      </div>
+      <div class="fi-body">${esc(r.notes || 'No notes added')}</div>
+    </div>
+  `).join('');
+}
+function emptyState(title, sub){
+  return `<div class="empty-state"><div class="ee-icon">○</div><div style="color:#C8C5BC; font-weight:600; margin-bottom:4px;">${title}</div><div>${sub}</div></div>`;
+}
+function esc(s){
+  if(s===undefined||s===null) return '';
+  return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+renderCandidates();
+renderJobs();
+renderReferrals();
+</script>
+</body>
+</html>
