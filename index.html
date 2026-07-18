@@ -82,6 +82,7 @@
   }
   .eyebrow::before{content:""; width:24px; height:1px; background:var(--amber);}
   .hero h1{font-size:clamp(40px,6vw,76px); max-width:780px;}
+  .hero .hero-badge{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border:1px solid rgba(255,180,0,0.25); border-radius:999px; background:rgba(255,180,0,0.08); color:var(--amber); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:18px;}
   .hero h1 .strike{position:relative; color:var(--slate);}
   .hero h1 .strike::after{
     content:""; position:absolute; left:0; right:0; top:52%; height:2px; background:var(--slate); opacity:.6;
@@ -222,11 +223,11 @@
 
 <div class="topbar">
   <div class="brand">
-    <div class="mark">VCG</div>
-    <div>Emploi<div class="sub">Reverse Recruiting</div></div>
+    <div class="mark">VG</div>
+    <div>Vashistha Group<div class="sub">Emploi Portal</div></div>
   </div>
   <div class="nav-links">
-    <button class="nav-btn active" data-view="home">Home</button>
+    <button class="nav-btn active" data-view="home">Emploi</button>
     <button class="nav-btn" data-view="candidate">Candidate</button>
     <button class="nav-btn" data-view="client">Client</button>
     <button class="nav-btn" data-view="employee">Employee</button>
@@ -236,9 +237,10 @@
 <!-- ============ HOME ============ -->
 <section class="portal-section active" id="view-home">
   <div class="hero">
+    <div class="hero-badge">Now live as the Vashistha Group Emploi experience</div>
     <div class="eyebrow">Reverse Recruiting</div>
     <h1>Are you stuck in your <span class="strike">career?</span></h1>
-    <p class="lede">You've been applying, waiting, and hoping — but nothing's moving. Emploi by VCG does the heavy lifting for you: a dedicated recruiter working your search every day.</p>
+    <p class="lede">You've been applying, waiting, and hoping — but nothing's moving. Emploi by Vashistha Group does the heavy lifting for you: a dedicated recruiter working your search every day.</p>
     <div class="hero-cta">
       <button class="btn btn-primary" data-view="candidate">Submit my resume</button>
       <button class="btn btn-ghost" data-view="client">Post a job</button>
