@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://www.vashisthagroup.net/emploi/login",
+      "permanent": false
+    }
+  ]
+}
