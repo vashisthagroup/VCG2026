@@ -59,7 +59,7 @@
     font-family:'JetBrains Mono',monospace; font-weight:700; font-size:13px;
   }
   .brand .sub{font-family:'JetBrains Mono',monospace; font-size:10px; color:var(--slate); letter-spacing:0.08em; text-transform:uppercase; font-weight:500;}
-  .nav-links{display:flex; gap:6px;}
+  .nav-links{display:flex; gap:6px; margin-left:36px;}
   .nav-btn{
     font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.03em;
     padding:9px 16px; border-radius:999px; cursor:pointer;
@@ -68,6 +68,9 @@
   }
   .nav-btn:hover{color:var(--paper);}
   .nav-btn.active{background:var(--paper); color:var(--ink); border-color:var(--paper);}
+  .auth-actions{display:flex; align-items:center; gap:10px; margin-left:auto;}
+  .btn-sm{padding:9px 18px; font-size:13px;}
+  @media(max-width:760px){ .nav-links{display:none;} }
 
   /* ---------- hero ---------- */
   .hero{
@@ -192,9 +195,9 @@
   .feed-item{
     border:1px solid var(--line); border-radius:var(--r-md); padding:16px 18px; background:var(--ink);
   }
-  .feed-item .fi-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
+  .fi-top{display:flex; justify-content:space-between; align-items:flex-start; gap:10px;}
   .feed-item h4{font-size:14.5px; font-weight:600; margin:0; font-family:'Inter',sans-serif;}
-  .feed-item .fi-meta{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--slate); margin-top:3px;}
+  .fi-meta{font-family:'JetBrains Mono',monospace; font-size:10.5px; color:var(--slate); margin-top:3px;}
   .feed-item .fi-body{font-size:13px; color:#C8C5BC; margin-top:10px; line-height:1.5;}
   .badge{font-family:'JetBrains Mono',monospace; font-size:10px; padding:3px 9px; border-radius:999px; white-space:nowrap; text-transform:uppercase; letter-spacing:0.04em;}
   .badge.amber{background:rgba(255,180,0,0.12); color:var(--amber); border:1px solid rgba(255,180,0,0.3);}
@@ -205,6 +208,24 @@
 
   .resume-link{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--amber); text-decoration:none; display:inline-flex; align-items:center; gap:5px; margin-top:8px;}
   .resume-link:hover{text-decoration:underline;}
+
+  /* ---------- jobs / explore ---------- */
+  .search-row{max-width:1100px; margin:0 auto; padding:0 32px;}
+  .search-box{position:relative; max-width:440px;}
+  .search-box input{padding-left:40px;}
+  .search-box .si{position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--slate); font-size:14px; pointer-events:none;}
+
+  .jobs-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:16px; max-width:1100px; margin:28px auto 100px; padding:0 32px;}
+  .featured-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px;}
+  @media(max-width:880px){ .jobs-grid{grid-template-columns:1fr;} .featured-grid{grid-template-columns:1fr 1fr;} }
+  @media(max-width:600px){ .featured-grid{grid-template-columns:1fr;} }
+
+  .job-card{border:1px solid var(--line); border-radius:var(--r-lg); padding:24px; background:var(--ink-soft); transition:border-color .15s ease, transform .15s ease;}
+  .job-card:hover{border-color:var(--amber); transform:translateY(-2px);}
+  .job-card h4{font-size:16.5px; font-family:'Fraunces',serif; font-weight:600; margin:0;}
+  .job-card .jc-company{font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--amber); text-transform:uppercase; letter-spacing:0.05em; margin-top:6px;}
+  .job-card .jc-meta{display:flex; flex-wrap:wrap; gap:2px 10px; margin-top:12px;}
+  .job-card .jc-desc{font-size:13px; color:#C8C5BC; line-height:1.55; margin-top:12px;}
 
   footer{border-top:1px solid var(--line); padding:34px 32px; text-align:center;}
   footer .mono{font-size:11.5px; color:var(--slate);}
@@ -227,10 +248,15 @@
     <div>Vashistha Group<div class="sub">Emploi Portal</div></div>
   </div>
   <div class="nav-links">
-    <button class="nav-btn active" data-view="home">Emploi</button>
-    <button class="nav-btn" data-view="candidate">Candidate</button>
-    <button class="nav-btn" data-view="client">Client</button>
-    <button class="nav-btn" data-view="employee">Employee</button>
+    <button class="nav-btn active" data-view="home">Explore</button>
+    <button class="nav-btn" data-view="jobs">Jobs</button>
+    <button class="nav-btn" data-view="candidate">My Resume</button>
+    <button class="nav-btn" data-view="client">Post a Job</button>
+    <button class="nav-btn" data-view="employee">Refer</button>
+  </div>
+  <div class="auth-actions">
+    <button class="nav-btn" id="login-btn">Login</button>
+    <button class="btn btn-primary btn-sm" id="signup-btn">Sign Up</button>
   </div>
 </div>
 
@@ -243,6 +269,7 @@
     <p class="lede">You've been applying, waiting, and hoping — but nothing's moving. Emploi by Vashistha Group does the heavy lifting for you: a dedicated recruiter working your search every day.</p>
     <div class="hero-cta">
       <button class="btn btn-primary" data-view="candidate">Submit my resume</button>
+      <button class="btn btn-ghost" data-view="jobs">Browse open roles</button>
       <button class="btn btn-ghost" data-view="client">Post a job</button>
       <button class="btn btn-ghost" data-view="employee">Submit a referral</button>
     </div>
@@ -277,6 +304,17 @@
   </div>
 
   <div class="section" style="padding-top:0;">
+    <div class="section-head" style="display:flex; align-items:flex-end; justify-content:space-between; gap:20px; flex-wrap:wrap;">
+      <div>
+        <div class="eyebrow">Open now</div>
+        <h2>Roles worth exploring</h2>
+      </div>
+      <button class="btn btn-ghost" data-view="jobs">Browse all jobs</button>
+    </div>
+    <div class="featured-grid" id="featured-jobs-list"></div>
+  </div>
+
+  <div class="section" style="padding-top:0;">
     <div class="section-head">
       <div class="eyebrow">Three ways in</div>
       <h2>Pick your path</h2>
@@ -301,10 +339,26 @@
   </div>
 </section>
 
+<!-- ============ JOBS (EXPLORE) ============ -->
+<section class="portal-section" id="view-jobs">
+  <div class="portal-hero">
+    <div class="eyebrow">Browse Roles</div>
+    <h1>Search opportunities built for your next move.</h1>
+    <p>Every role here came from a client who briefed our team directly — no scraped listings, no dead links.</p>
+  </div>
+  <div class="search-row">
+    <div class="search-box">
+      <span class="si">⌕</span>
+      <input type="text" id="jobs-search" placeholder="Search by title, company, or location">
+    </div>
+  </div>
+  <div class="jobs-grid" id="jobs-explore-list"></div>
+</section>
+
 <!-- ============ CANDIDATE ============ -->
 <section class="portal-section" id="view-candidate">
   <div class="portal-hero">
-    <div class="eyebrow">Candidate Portal</div>
+    <div class="eyebrow">My Resume</div>
     <h1>Let's find your next role.</h1>
     <p>Drop your resume and a few details. A dedicated recruiter reviews every submission — no black-box algorithm, no endless applications into the void.</p>
   </div>
@@ -440,7 +494,7 @@
 </section>
 
 <footer>
-  <div class="mono">EMPLOI BY VCG · REVERSE RECRUITING · YOUR CAREER, ACCELERATED.</div>
+  <div class="mono">EMPLOI BY VCG · EXPLORE · JOBS · MY RESUME · YOUR CAREER, ACCELERATED.</div>
 </footer>
 
 <div class="toast" id="toast"><span class="dot"></span><span id="toast-text">Saved</span></div>
@@ -475,6 +529,10 @@ function setView(view){
 document.querySelectorAll('[data-view]').forEach(el=>{
   el.addEventListener('click', ()=> setView(el.dataset.view));
 });
+
+// ---------- auth actions (cosmetic — no backend accounts yet) ----------
+document.getElementById('login-btn').addEventListener('click', ()=> showToast('Accounts are coming soon — your recruiter has you covered for now.'));
+document.getElementById('signup-btn').addEventListener('click', ()=> showToast('Accounts are coming soon — submit your resume to get started.'));
 
 // ---------- file drop (candidate resume) ----------
 const drop = document.getElementById('c-drop');
@@ -544,6 +602,8 @@ document.getElementById('form-client').addEventListener('submit', e=>{
   e.target.reset();
   flashMsg('j-msg');
   renderJobs();
+  renderJobsExplore();
+  renderFeaturedJobs();
   showToast('Job posted');
 });
 
@@ -622,6 +682,43 @@ function renderReferrals(){
     </div>
   `).join('');
 }
+function jobCardHTML(j){
+  return `
+    <div class="job-card">
+      <div class="fi-top">
+        <h4>${esc(j.title)}</h4>
+        <span class="badge good">${esc(j.type||'Full-time')}</span>
+      </div>
+      <div class="jc-company">${esc(j.company)}</div>
+      <div class="jc-meta">
+        <span class="fi-meta">${esc(j.location||'Location TBD')}</span>
+        ${j.salary ? `<span class="fi-meta">· ${esc(j.salary)}</span>` : ''}
+        <span class="fi-meta">· ${timeAgo(j.ts)}</span>
+      </div>
+      <div class="jc-desc">${esc(j.desc).slice(0,120)}${j.desc.length>120?'…':''}</div>
+    </div>
+  `;
+}
+function renderJobsExplore(){
+  const searchEl = document.getElementById('jobs-search');
+  const q = (searchEl && searchEl.value || '').toLowerCase().trim();
+  const list = load(STORE_KEYS.jobs).filter(j=>{
+    if(!q) return true;
+    return (j.title+' '+j.company+' '+(j.location||'')).toLowerCase().includes(q);
+  });
+  const el = document.getElementById('jobs-explore-list');
+  if(!list.length){ el.innerHTML = emptyState(q ? 'No roles match that search' : 'No open roles yet', q ? 'Try a different title, company, or location.' : 'Posted jobs will appear here as clients brief us.'); return; }
+  el.innerHTML = list.map(jobCardHTML).join('');
+}
+document.getElementById('jobs-search').addEventListener('input', renderJobsExplore);
+
+function renderFeaturedJobs(){
+  const list = load(STORE_KEYS.jobs).slice(0,4);
+  const el = document.getElementById('featured-jobs-list');
+  if(!list.length){ el.innerHTML = emptyState('No open roles yet', 'Posted jobs will appear here as clients brief us.'); return; }
+  el.innerHTML = list.map(jobCardHTML).join('');
+}
+
 function emptyState(title, sub){
   return `<div class="empty-state"><div class="ee-icon">○</div><div style="color:#C8C5BC; font-weight:600; margin-bottom:4px;">${title}</div><div>${sub}</div></div>`;
 }
@@ -633,6 +730,8 @@ function esc(s){
 renderCandidates();
 renderJobs();
 renderReferrals();
+renderJobsExplore();
+renderFeaturedJobs();
 </script>
 </body>
 </html>
