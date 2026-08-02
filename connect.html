@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitae — Sign in to Emploi by VCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12131A; --ink-soft:#1B1D29; --paper:#F7F5F1; --paper-dim:#EDEAE3;
+    --amber:#FFB400; --slate:#8A8FA3; --line:#2B2D38; --good:#3FAE6A;
+    --r-md:10px; --r-lg:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;
+  }
+  h1,.display{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em; line-height:1.1; margin:0;}
+  .mono{font-family:'JetBrains Mono',monospace; letter-spacing:0.02em;}
+  a{color:inherit;}
+
+  .card{
+    width:100%; max-width:420px; background:var(--ink-soft); border:1px solid var(--line);
+    border-radius:var(--r-lg); padding:40px 36px;
+  }
+  .brand{display:flex; align-items:center; gap:10px; margin-bottom:30px;}
+  .brand .mark{
+    width:30px; height:30px; border-radius:8px; background:var(--amber); color:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px;
+  }
+  .brand .name{font-family:'Fraunces',serif; font-size:20px; font-weight:600;}
+  .eyebrow{
+    font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--amber);
+    text-transform:uppercase; letter-spacing:0.14em; margin-bottom:12px;
+  }
+  h1{font-size:28px; margin-bottom:10px;}
+  .lede{color:var(--slate); font-size:14.5px; line-height:1.55; margin-bottom:30px;}
+
+  .provider-btn{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; padding:13px 18px; border-radius:999px; font-size:14.5px; font-weight:600;
+    cursor:pointer; text-decoration:none; margin-bottom:12px; transition:transform .15s ease, border-color .15s ease;
+  }
+  .provider-btn:hover{transform:translateY(-1px);}
+  .provider-btn.linkedin{background:#0A66C2; color:#fff; border:1px solid #0A66C2;}
+  .provider-btn.google{background:var(--paper); color:var(--ink); border:1px solid var(--paper);}
+  .provider-btn svg{width:18px; height:18px; flex-shrink:0;}
+
+  .fine{font-size:12px; color:var(--slate); text-align:center; margin-top:22px; line-height:1.6;}
+  .fine a{color:var(--amber); text-decoration:none;}
+  .fine a:hover{text-decoration:underline;}
+
+  .alert{
+    font-family:'JetBrains Mono',monospace; font-size:12px; color:#E0664B;
+    background:rgba(224,102,75,0.08); border:1px solid rgba(224,102,75,0.3);
+    border-radius:var(--r-md); padding:12px 14px; margin-bottom:20px; display:none;
+  }
+  .alert.show{display:block;}
+
+  /* signed-in state */
+  .profile{display:none;}
+  .profile.show{display:block;}
+  .profile-row{display:flex; align-items:center; gap:14px; margin-bottom:26px;}
+  .profile-row img{width:52px; height:52px; border-radius:50%; border:1px solid var(--line);}
+  .profile-row .avatar-fallback{
+    width:52px; height:52px; border-radius:50%; background:var(--ink); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:19px; color:var(--amber);
+  }
+  .profile-row .pname{font-size:16.5px; font-weight:600;}
+  .profile-row .pemail{font-size:12.5px; color:var(--slate); font-family:'JetBrains Mono',monospace; margin-top:2px;}
+  .badge-provider{
+    display:inline-block; font-family:'JetBrains Mono',monospace; font-size:10px; text-transform:uppercase;
+    letter-spacing:0.05em; padding:3px 9px; border-radius:999px; background:rgba(63,174,106,0.12);
+    color:var(--good); border:1px solid rgba(63,174,106,0.3); margin-top:6px;
+  }
+  .btn-continue{
+    display:block; width:100%; text-align:center; padding:14px 18px; border-radius:999px;
+    background:var(--amber); color:var(--ink); font-weight:600; font-size:14.5px; text-decoration:none;
+    transition:transform .15s ease;
+  }
+  .btn-continue:hover{transform:translateY(-1px);}
+  .form-select-wrap{display:none;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="brand">
+    <div class="mark">VG</div>
+    <div class="name">Vitae</div>
+  </div>
+
+  <div class="alert" id="auth-alert"></div>
+
+  <!-- signed-out state -->
+  <div id="signin-state">
+    <div class="eyebrow">Connect · Emploi by VCG</div>
+    <h1>Bring your profile with you.</h1>
+    <p class="lede">Sign in once and we'll pre-fill your resume submission — name, email, and photo pulled straight from your account.</p>
+
+    <a class="provider-btn linkedin" id="linkedin-btn" href="#">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+      Continue with LinkedIn
+    </a>
+    <a class="provider-btn google" id="google-btn" href="#">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.85A10.99 10.99 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.09A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.43.34-2.09V7.06H2.18A11 11 0 0 0 1 12c0 1.78.43 3.46 1.18 4.94l3.66-2.85z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a10.99 10.99 0 0 0-9.82 6.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </a>
+
+    <div class="fine">By continuing you agree to let Vashistha Group access your name, email, and profile photo. We never see your password. <a href="index.html">Back to Emploi</a></div>
+  </div>
+
+  <!-- signed-in state -->
+  <div class="profile" id="profile-state">
+    <div class="eyebrow">Signed in</div>
+    <div class="profile-row">
+      <img id="p-avatar" src="" alt="" style="display:none;">
+      <div class="avatar-fallback" id="p-avatar-fallback">?</div>
+      <div>
+        <div class="pname" id="p-name">—</div>
+        <div class="pemail" id="p-email">—</div>
+        <div class="badge-provider" id="p-provider">Provider</div>
+      </div>
+    </div>
+    <a class="btn-continue" id="continue-btn" href="#">Continue to my resume →</a>
+    <div class="fine"><a href="connect.html">Sign in as someone else</a></div>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const authError = params.get('authError');
+const payload = params.get('payload');
+const sig = params.get('sig');
+
+const ERRORS = {
+  linkedin: 'LinkedIn sign-in didn’t go through. Please try again.',
+  google: 'Google sign-in didn’t go through. Please try again.',
+  state: 'That sign-in link expired or was already used. Please try again.',
+};
+
+function showAlert(msg){
+  const el = document.getElementById('auth-alert');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+// wire up provider buttons, carrying ?return=candidate through if the user
+// arrived here from the Emploi app wanting to prefill their resume
+const returnTo = params.get('return') || 'connect';
+document.getElementById('linkedin-btn').href = `/api/auth/linkedin?return=${encodeURIComponent(returnTo)}`;
+document.getElementById('google-btn').href = `/api/auth/google?return=${encodeURIComponent(returnTo)}`;
+
+if (authError && ERRORS[authError]) {
+  showAlert(ERRORS[authError]);
+}
+
+if (payload && sig) {
+  fetch(`/api/session?payload=${encodeURIComponent(payload)}&sig=${encodeURIComponent(sig)}`)
+    .then(r => r.ok ? r.json() : Promise.reject(r))
+    .then(profile => {
+      document.getElementById('signin-state').style.display = 'none';
+      document.getElementById('profile-state').classList.add('show');
+      document.getElementById('p-name').textContent = profile.name || 'Unnamed';
+      document.getElementById('p-email').textContent = profile.email || '';
+      document.getElementById('p-provider').textContent = profile.provider === 'google' ? 'Google' : 'LinkedIn';
+      if (profile.picture) {
+        document.getElementById('p-avatar').src = profile.picture;
+        document.getElementById('p-avatar').style.display = 'block';
+        document.getElementById('p-avatar-fallback').style.display = 'none';
+      } else {
+        document.getElementById('p-avatar-fallback').textContent = (profile.name || '?').charAt(0).toUpperCase();
+      }
+      document.getElementById('continue-btn').href = `index.html?view=candidate&payload=${encodeURIComponent(payload)}&sig=${encodeURIComponent(sig)}`;
+      // scrub the signed payload out of this page's own address bar
+      window.history.replaceState({}, '', 'connect.html');
+    })
+    .catch(() => showAlert('We couldn’t verify that sign-in. Please try again.'));
+}
+</script>
+</body>
+</html>

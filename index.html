@@ -365,7 +365,7 @@
   <div class="grid-2">
     <div class="card">
       <h3>Submit your resume</h3>
-      <div class="hint">Takes about 2 minutes.</div>
+      <div class="hint">Takes about 2 minutes — or <a href="connect.html?return=candidate" style="color:var(--amber);">sign in with LinkedIn or Google</a> to pre-fill your name and email.</div>
       <form id="form-candidate">
         <label>Full name</label>
         <input type="text" id="c-name" required placeholder="Jordan Avery">
@@ -530,9 +530,31 @@ document.querySelectorAll('[data-view]').forEach(el=>{
   el.addEventListener('click', ()=> setView(el.dataset.view));
 });
 
-// ---------- auth actions (cosmetic — no backend accounts yet) ----------
-document.getElementById('login-btn').addEventListener('click', ()=> showToast('Accounts are coming soon — your recruiter has you covered for now.'));
-document.getElementById('signup-btn').addEventListener('click', ()=> showToast('Accounts are coming soon — submit your resume to get started.'));
+// ---------- auth actions ----------
+document.getElementById('login-btn').addEventListener('click', ()=> window.location.href = 'connect.html?return=candidate');
+document.getElementById('signup-btn').addEventListener('click', ()=> window.location.href = 'connect.html?return=candidate');
+
+// ---------- pick up a verified profile handed off from connect.html ----------
+(function importProfileFromConnect(){
+  const params = new URLSearchParams(window.location.search);
+  const payload = params.get('payload');
+  const sig = params.get('sig');
+  if(!payload || !sig) return;
+
+  fetch(`/api/session?payload=${encodeURIComponent(payload)}&sig=${encodeURIComponent(sig)}`)
+    .then(r => r.ok ? r.json() : Promise.reject(r))
+    .then(profile=>{
+      setView('candidate');
+      if(profile.name) document.getElementById('c-name').value = profile.name;
+      if(profile.email) document.getElementById('c-email').value = profile.email;
+      showToast(`Profile imported from ${profile.provider === 'google' ? 'Google' : 'LinkedIn'}`);
+    })
+    .catch(()=> showToast('Could not verify that sign-in — please try again.'))
+    .finally(()=>{
+      // scrub the signed payload out of the address bar
+      window.history.replaceState({}, '', window.location.pathname);
+    });
+})();
 
 // ---------- file drop (candidate resume) ----------
 const drop = document.getElementById('c-drop');
