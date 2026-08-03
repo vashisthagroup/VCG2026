@@ -547,6 +547,21 @@ document.getElementById('signup-btn').addEventListener('click', ()=> window.loca
       setView('candidate');
       if(profile.name) document.getElementById('c-name').value = profile.name;
       if(profile.email) document.getElementById('c-email').value = profile.email;
+
+      // pull the fuller candidate profile (title/skills/location/resume) saved on connect.html
+      let saved = null;
+      try{ saved = (JSON.parse(localStorage.getItem('emploi_candidate_profiles')) || {})[profile.email]; }catch(e){}
+      if(saved){
+        if(saved.title) document.getElementById('c-title').value = saved.title;
+        const extras = [saved.skills ? `Skills: ${saved.skills}` : '', saved.location ? `Location: ${saved.location}` : ''].filter(Boolean).join('\n');
+        if(extras) document.getElementById('c-notes').value = extras;
+        if(saved.resume){
+          resumeData = saved.resume;
+          drop.classList.add('has-file');
+          document.getElementById('c-drop-text').textContent = '✓ ' + saved.resume.name;
+        }
+      }
+
       showToast(`Profile imported from ${profile.provider === 'google' ? 'Google' : 'LinkedIn'}`);
     })
     .catch(()=> showToast('Could not verify that sign-in — please try again.'))

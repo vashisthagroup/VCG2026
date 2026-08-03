@@ -24,7 +24,7 @@
   a{color:inherit;}
 
   .card{
-    width:100%; max-width:420px; background:var(--ink-soft); border:1px solid var(--line);
+    width:100%; max-width:440px; background:var(--ink-soft); border:1px solid var(--line);
     border-radius:var(--r-lg); padding:40px 36px;
   }
   .brand{display:flex; align-items:center; gap:10px; margin-bottom:30px;}
@@ -84,7 +84,35 @@
     transition:transform .15s ease;
   }
   .btn-continue:hover{transform:translateY(-1px);}
-  .form-select-wrap{display:none;}
+
+  /* profile form */
+  label{display:block; font-family:'IBM Plex Sans',sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--slate); margin-bottom:6px; margin-top:16px;}
+  label:first-of-type{margin-top:0;}
+  input[type=text]{
+    width:100%; background:var(--ink); border:1px solid var(--line); color:var(--paper);
+    padding:11px 13px; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px; outline:none;
+    transition:border-color .15s ease;
+  }
+  input[type=text]:focus{border-color:var(--amber);}
+  .file-drop{
+    border:1.5px dashed var(--line); border-radius:var(--r-md); padding:16px;
+    text-align:center; cursor:pointer; transition:border-color .15s ease, background .15s ease;
+  }
+  .file-drop:hover, .file-drop.drag{border-color:var(--amber); background:rgba(201,162,39,0.04);}
+  .file-drop input{display:none;}
+  .file-drop .fd-text{font-size:13px; color:var(--paper);}
+  .file-drop .fd-sub{font-size:11px; color:var(--slate); margin-top:3px; font-family:'IBM Plex Sans',sans-serif;}
+  .file-drop.has-file{border-color:var(--good); background:rgba(47,163,150,0.06);}
+  .file-drop.has-file .fd-text{color:var(--good);}
+  .btn-save{
+    width:100%; margin-top:22px; padding:12px 18px; border-radius:999px; border:1px solid var(--line);
+    background:transparent; color:var(--paper); font-weight:600; font-size:14px; cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .btn-save:hover{border-color:var(--amber);}
+  .save-msg{font-family:'IBM Plex Sans',sans-serif; font-size:11.5px; color:var(--good); text-align:center; margin-top:10px; height:14px; opacity:0; transition:opacity .2s ease;}
+  .save-msg.show{opacity:1;}
+  .divider{height:1px; background:var(--line); margin:26px 0 22px;}
 </style>
 </head>
 <body>
@@ -117,7 +145,7 @@
 
   <!-- signed-in state -->
   <div class="profile" id="profile-state">
-    <div class="eyebrow">Signed in</div>
+    <div class="eyebrow" id="profile-eyebrow">Signed in</div>
     <div class="profile-row">
       <img id="p-avatar" src="" alt="" style="display:none;">
       <div class="avatar-fallback" id="p-avatar-fallback">?</div>
@@ -127,7 +155,26 @@
         <div class="badge-provider" id="p-provider">Provider</div>
       </div>
     </div>
-    <a class="btn-continue" id="continue-btn" href="#">Continue to my resume →</a>
+
+    <form id="profile-form">
+      <label>Headline / current title</label>
+      <input type="text" id="pf-title" placeholder="Senior Product Manager">
+      <label>Skills</label>
+      <input type="text" id="pf-skills" placeholder="React, Node.js, Figma">
+      <label>Location</label>
+      <input type="text" id="pf-location" placeholder="Bengaluru, India">
+      <label>Resume</label>
+      <div class="file-drop" id="pf-drop">
+        <input type="file" id="pf-file" accept=".pdf,.doc,.docx">
+        <div class="fd-text" id="pf-drop-text">Click to upload or drag your resume here</div>
+        <div class="fd-sub">PDF or DOC, up to 8MB</div>
+      </div>
+      <button type="submit" class="btn-save">Save profile</button>
+      <div class="save-msg" id="pf-msg">✓ Profile saved to this browser</div>
+    </form>
+
+    <div class="divider"></div>
+    <a class="btn-continue" id="continue-btn" href="#">Continue to my application →</a>
     <div class="fine"><a href="connect.html">Sign in as someone else</a></div>
   </div>
 </div>
@@ -150,6 +197,40 @@ function showAlert(msg){
   el.classList.add('show');
 }
 
+// ---------- candidate profiles, keyed by verified email, stored in this browser ----------
+const PROFILES_KEY = 'emploi_candidate_profiles';
+function loadProfiles(){
+  try { return JSON.parse(localStorage.getItem(PROFILES_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+function saveProfile(email, record){
+  const profiles = loadProfiles();
+  profiles[email] = record;
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+}
+
+// ---------- resume file drop ----------
+const pfDrop = document.getElementById('pf-drop');
+const pfFileInput = document.getElementById('pf-file');
+let pfResumeData = null; // {name, type, size, dataUrl}
+pfDrop.addEventListener('click', () => pfFileInput.click());
+['dragover'].forEach(evt => pfDrop.addEventListener(evt, e => { e.preventDefault(); pfDrop.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(evt => pfDrop.addEventListener(evt, e => { e.preventDefault(); pfDrop.classList.remove('drag'); }));
+pfDrop.addEventListener('drop', e => {
+  if (e.dataTransfer.files.length) { pfFileInput.files = e.dataTransfer.files; handlePfFile(e.dataTransfer.files[0]); }
+});
+pfFileInput.addEventListener('change', e => { if (e.target.files.length) handlePfFile(e.target.files[0]); });
+function handlePfFile(file){
+  if (file.size > 8 * 1024 * 1024) { alert('File is larger than 8MB — please attach a smaller file.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    pfResumeData = { name: file.name, type: file.type, size: file.size, dataUrl: e.target.result };
+    pfDrop.classList.add('has-file');
+    document.getElementById('pf-drop-text').textContent = '✓ ' + file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
 // wire up provider buttons, carrying ?return=candidate through if the user
 // arrived here from the Emploi app wanting to prefill their resume
 const returnTo = params.get('return') || 'connect';
@@ -160,10 +241,13 @@ if (authError && ERRORS[authError]) {
   showAlert(ERRORS[authError]);
 }
 
+let verifiedEmail = null;
+
 if (payload && sig) {
   fetch(`/api/session?payload=${encodeURIComponent(payload)}&sig=${encodeURIComponent(sig)}`)
     .then(r => r.ok ? r.json() : Promise.reject(r))
     .then(profile => {
+      verifiedEmail = profile.email;
       document.getElementById('signin-state').style.display = 'none';
       document.getElementById('profile-state').classList.add('show');
       document.getElementById('p-name').textContent = profile.name || 'Unnamed';
@@ -176,12 +260,49 @@ if (payload && sig) {
       } else {
         document.getElementById('p-avatar-fallback').textContent = (profile.name || '?').charAt(0).toUpperCase();
       }
-      document.getElementById('continue-btn').href = `index.html?view=candidate&payload=${encodeURIComponent(payload)}&sig=${encodeURIComponent(sig)}`;
+
+      // returning candidate? pull their saved profile from this browser
+      const existing = profile.email ? loadProfiles()[profile.email] : null;
+      if (existing) {
+        document.getElementById('profile-eyebrow').textContent = 'Welcome back';
+        document.getElementById('pf-title').value = existing.title || '';
+        document.getElementById('pf-skills').value = existing.skills || '';
+        document.getElementById('pf-location').value = existing.location || '';
+        if (existing.resume) {
+          pfResumeData = existing.resume;
+          pfDrop.classList.add('has-file');
+          document.getElementById('pf-drop-text').textContent = '✓ ' + existing.resume.name;
+        }
+      }
+
+      updateContinueLink();
       // scrub the signed payload out of this page's own address bar
       window.history.replaceState({}, '', 'connect.html');
     })
     .catch(() => showAlert('We couldn’t verify that sign-in. Please try again.'));
 }
+
+function updateContinueLink(){
+  document.getElementById('continue-btn').href = `index.html?view=candidate&payload=${encodeURIComponent(payload)}&sig=${encodeURIComponent(sig)}`;
+}
+
+document.getElementById('profile-form').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!verifiedEmail) return;
+  saveProfile(verifiedEmail, {
+    name: document.getElementById('p-name').textContent,
+    email: verifiedEmail,
+    picture: document.getElementById('p-avatar').src || null,
+    title: document.getElementById('pf-title').value,
+    skills: document.getElementById('pf-skills').value,
+    location: document.getElementById('pf-location').value,
+    resume: pfResumeData,
+    updatedAt: Date.now(),
+  });
+  const msg = document.getElementById('pf-msg');
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2400);
+});
 </script>
 </body>
 </html>
