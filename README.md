@@ -29,3 +29,58 @@ localStorage won't survive across devices/users, so for a real launch you'd want
 
 Happy to build the backend (Supabase is fastest to stand up) and wire this
 front end to it — just say the word.
+
+## Vitae connect page — LinkedIn / Google sign-in
+
+`connect.html` is a standalone sign-in landing page ("Vitae") that lets a
+candidate authenticate with LinkedIn or Google and hands their verified
+name/email/photo off to `index.html` to pre-fill the resume form. Because
+the OAuth token exchange requires a client secret, it's backed by three
+Vercel serverless functions:
+
+- `api/auth/linkedin.js` and `api/auth/google.js` — start the OAuth
+  redirect and exchange the returned code for a profile.
+- `api/session.js` — verifies the signed profile payload before the page
+  trusts it (signed redirects expire after 5 minutes).
+
+After signing in, a candidate can fill in headline, skills, location, and
+resume — saved as a profile keyed to their verified email in
+`localStorage` under `emploi_candidate_profiles`. Signing in again with
+the same account shows a "Welcome back" state with that profile restored,
+and `index.html`'s resume form pulls all of it (not just name/email) when
+arriving via the sign-in handoff. Like the rest of this MVP, this profile
+data lives in the browser only — it doesn't sync across devices until a
+real backend replaces `localStorage` (see "To make it production-ready"
+above).
+
+### 1. Register the OAuth apps
+- **LinkedIn**: [LinkedIn Developer Portal](https://www.linkedin.com/developers/apps) →
+  Create app → add the **"Sign In with LinkedIn using OpenID Connect"**
+  product → under Auth, add this exact redirect URL:
+  `https://<your-vercel-domain>/api/auth/linkedin`
+- **Google**: [Google Cloud Console](https://console.cloud.google.com/apis/credentials) →
+  configure the OAuth consent screen (External is fine for testing) →
+  create an **OAuth client ID** (type: Web application) → add this exact
+  redirect URI: `https://<your-vercel-domain>/api/auth/google`
+
+### 2. Set environment variables in Vercel
+Project Settings → Environment Variables:
+
+| Variable | Value |
+|---|---|
+| `LINKEDIN_CLIENT_ID` | from the LinkedIn app |
+| `LINKEDIN_CLIENT_SECRET` | from the LinkedIn app |
+| `GOOGLE_CLIENT_ID` | from the Google OAuth client |
+| `GOOGLE_CLIENT_SECRET` | from the Google OAuth client |
+| `APP_SESSION_SECRET` | any long random string, e.g. `openssl rand -hex 32` |
+
+Redeploy after adding these — serverless functions only pick up new env
+vars on the next deploy.
+
+### 3. Note on Gmail
+Reading Gmail messages (not just basic profile) requires a *sensitive*
+Google API scope, which triggers Google's app verification/security
+review — that can take weeks and needs a privacy policy + demo video.
+This build intentionally only requests basic profile (`openid email
+profile`), not Gmail access. Add that later once you're ready to go
+through Google's review.

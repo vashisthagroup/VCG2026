@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitae — Sign in to Emploi by VCG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1420; --ink-soft:#161F35; --paper:#F6F3EA; --paper-dim:#EFEADC;
+    --amber:#C9A227; --slate:#7D8498; --line:#2B3350; --good:#2FA396;
+    --r-md:10px; --r-lg:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;}
+  body{
+    background:var(--ink); color:var(--paper); font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    display:flex; align-items:center; justify-content:center; min-height:100vh; padding:24px;
+  }
+  h1,.display{font-family:'Fraunces',serif; font-weight:600; letter-spacing:-0.01em; line-height:1.1; margin:0;}
+  .mono{font-family:'IBM Plex Sans',sans-serif; letter-spacing:0.02em;}
+  a{color:inherit;}
+
+  .card{
+    width:100%; max-width:440px; background:var(--ink-soft); border:1px solid var(--line);
+    border-radius:var(--r-lg); padding:40px 36px;
+  }
+  .brand{display:flex; align-items:center; gap:10px; margin-bottom:30px;}
+  .brand .mark{
+    width:30px; height:30px; border-radius:8px; background:var(--amber); color:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Sans',sans-serif; font-weight:700; font-size:14px;
+  }
+  .brand .name{font-family:'Fraunces',serif; font-size:20px; font-weight:600;}
+  .eyebrow{
+    font-family:'IBM Plex Sans',sans-serif; font-size:11px; color:var(--amber);
+    text-transform:uppercase; letter-spacing:0.14em; margin-bottom:12px;
+  }
+  h1{font-size:28px; margin-bottom:10px;}
+  .lede{color:var(--slate); font-size:14.5px; line-height:1.55; margin-bottom:30px;}
+
+  .provider-btn{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; padding:13px 18px; border-radius:999px; font-size:14.5px; font-weight:600;
+    cursor:pointer; text-decoration:none; margin-bottom:12px; transition:transform .15s ease, border-color .15s ease;
+  }
+  .provider-btn:hover{transform:translateY(-1px);}
+  .provider-btn.linkedin{background:#0A66C2; color:#fff; border:1px solid #0A66C2;}
+  .provider-btn.google{background:var(--paper); color:var(--ink); border:1px solid var(--paper);}
+  .provider-btn svg{width:18px; height:18px; flex-shrink:0;}
+
+  .fine{font-size:12px; color:var(--slate); text-align:center; margin-top:22px; line-height:1.6;}
+  .fine a{color:var(--amber); text-decoration:none;}
+  .fine a:hover{text-decoration:underline;}
+
+  .alert{
+    font-family:'IBM Plex Sans',sans-serif; font-size:12px; color:#E0664B;
+    background:rgba(224,102,75,0.08); border:1px solid rgba(224,102,75,0.3);
+    border-radius:var(--r-md); padding:12px 14px; margin-bottom:20px; display:none;
+  }
+  .alert.show{display:block;}
+
+  /* signed-in state */
+  .profile{display:none;}
+  .profile.show{display:block;}
+  .profile-row{display:flex; align-items:center; gap:14px; margin-bottom:26px;}
+  .profile-row img{width:52px; height:52px; border-radius:50%; border:1px solid var(--line);}
+  .profile-row .avatar-fallback{
+    width:52px; height:52px; border-radius:50%; background:var(--ink); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-size:19px; color:var(--amber);
+  }
+  .profile-row .pname{font-size:16.5px; font-weight:600;}
+  .profile-row .pemail{font-size:12.5px; color:var(--slate); font-family:'IBM Plex Sans',sans-serif; margin-top:2px;}
+  .badge-provider{
+    display:inline-block; font-family:'IBM Plex Sans',sans-serif; font-size:10px; text-transform:uppercase;
+    letter-spacing:0.05em; padding:3px 9px; border-radius:999px; background:rgba(47,163,150,0.12);
+    color:var(--good); border:1px solid rgba(47,163,150,0.3); margin-top:6px;
+  }
+  .btn-continue{
+    display:block; width:100%; text-align:center; padding:14px 18px; border-radius:999px;
+    background:var(--amber); color:var(--ink); font-weight:600; font-size:14.5px; text-decoration:none;
+    transition:transform .15s ease;
+  }
+  .btn-continue:hover{transform:translateY(-1px);}
+
+  /* profile form */
+  label{display:block; font-family:'IBM Plex Sans',sans-serif; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--slate); margin-bottom:6px; margin-top:16px;}
+  label:first-of-type{margin-top:0;}
+  input[type=text]{
+    width:100%; background:var(--ink); border:1px solid var(--line); color:var(--paper);
+    padding:11px 13px; border-radius:8px; font-family:'Inter',sans-serif; font-size:14px; outline:none;
+    transition:border-color .15s ease;
+  }
+  input[type=text]:focus{border-color:var(--amber);}
+  .file-drop{
+    border:1.5px dashed var(--line); border-radius:var(--r-md); padding:16px;
+    text-align:center; cursor:pointer; transition:border-color .15s ease, background .15s ease;
+  }
+  .file-drop:hover, .file-drop.drag{border-color:var(--amber); background:rgba(201,162,39,0.04);}
+  .file-drop input{display:none;}
+  .file-drop .fd-text{font-size:13px; color:var(--paper);}
+  .file-drop .fd-sub{font-size:11px; color:var(--slate); margin-top:3px; font-family:'IBM Plex Sans',sans-serif;}
+  .file-drop.has-file{border-color:var(--good); background:rgba(47,163,150,0.06);}
+  .file-drop.has-file .fd-text{color:var(--good);}
+  .btn-save{
+    width:100%; margin-top:22px; padding:12px 18px; border-radius:999px; border:1px solid var(--line);
+    background:transparent; color:var(--paper); font-weight:600; font-size:14px; cursor:pointer;
+    transition:border-color .15s ease;
+  }
+  .btn-save:hover{border-color:var(--amber);}
+  .save-msg{font-family:'IBM Plex Sans',sans-serif; font-size:11.5px; color:var(--good); text-align:center; margin-top:10px; height:14px; opacity:0; transition:opacity .2s ease;}
+  .save-msg.show{opacity:1;}
+  .divider{height:1px; background:var(--line); margin:26px 0 22px;}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="brand">
+    <div class="mark">VG</div>
+    <div class="name">Vitae</div>
+  </div>
+
+  <div class="alert" id="auth-alert"></div>
+
+  <!-- signed-out state -->
+  <div id="signin-state">
+    <div class="eyebrow">Connect · Emploi by VCG</div>
+    <h1>Bring your profile with you.</h1>
+    <p class="lede">Sign in once and we'll pre-fill your resume submission — name, email, and photo pulled straight from your account.</p>
+
+    <a class="provider-btn linkedin" id="linkedin-btn" href="#">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+      Continue with LinkedIn
+    </a>
+    <a class="provider-btn google" id="google-btn" href="#">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.85A10.99 10.99 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.09A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.43.34-2.09V7.06H2.18A11 11 0 0 0 1 12c0 1.78.43 3.46 1.18 4.94l3.66-2.85z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a10.99 10.99 0 0 0-9.82 6.06l3.66 2.85c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Continue with Google
+    </a>
+
+    <div class="fine">By continuing you agree to let Vashistha Group access your name, email, and profile photo. We never see your password. <a href="index.html">Back to Emploi</a></div>
+  </div>
+
+  <!-- signed-in state -->
+  <div class="profile" id="profile-state">
+    <div class="eyebrow" id="profile-eyebrow">Signed in</div>
+    <div class="profile-row">
+      <img id="p-avatar" src="" alt="" style="display:none;">
+      <div class="avatar-fallback" id="p-avatar-fallback">?</div>
+      <div>
+        <div class="pname" id="p-name">—</div>
+        <div class="pemail" id="p-email">—</div>
+        <div class="badge-provider" id="p-provider">Provider</div>
+      </div>
+    </div>
+
+    <form id="profile-form">
+      <label>Headline / current title</label>
+      <input type="text" id="pf-title" placeholder="Senior Product Manager">
+      <label>Skills</label>
+      <input type="text" id="pf-skills" placeholder="React, Node.js, Figma">
+      <label>Location</label>
+      <input type="text" id="pf-location" placeholder="Bengaluru, India">
+      <label>Resume</label>
+      <div class="file-drop" id="pf-drop">
+        <input type="file" id="pf-file" accept=".pdf,.doc,.docx">
+        <div class="fd-text" id="pf-drop-text">Click to upload or drag your resume here</div>
+        <div class="fd-sub">PDF or DOC, up to 8MB</div>
+      </div>
+      <button type="submit" class="btn-save">Save profile</button>
+      <div class="save-msg" id="pf-msg">✓ Profile saved to this browser</div>
+    </form>
+
+    <div class="divider"></div>
+    <a class="btn-continue" id="continue-btn" href="#">Continue to my application →</a>
+    <div class="fine"><a href="connect.html">Sign in as someone else</a></div>
+  </div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const authError = params.get('authError');
+const payload = params.get('payload');
+const sig = params.get('sig');
+
+const ERRORS = {
+  linkedin: 'LinkedIn sign-in didn’t go through. Please try again.',
+  google: 'Google sign-in didn’t go through. Please try again.',
+  state: 'That sign-in link expired or was already used. Please try again.',
+};
+
+function showAlert(msg){
+  const el = document.getElementById('auth-alert');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+// ---------- candidate profiles, keyed by verified email, stored in this browser ----------
+const PROFILES_KEY = 'emploi_candidate_profiles';
+function loadProfiles(){
+  try { return JSON.parse(localStorage.getItem(PROFILES_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+function saveProfile(email, record){
+  const profiles = loadProfiles();
+  profiles[email] = record;
+  localStorage.setItem(PROFILES_KEY, JSON.stringify(profiles));
+}
+
+// ---------- resume file drop ----------
+const pfDrop = document.getElementById('pf-drop');
+const pfFileInput = document.getElementById('pf-file');
+let pfResumeData = null; // {name, type, size, dataUrl}
+pfDrop.addEventListener('click', () => pfFileInput.click());
+['dragover'].forEach(evt => pfDrop.addEventListener(evt, e => { e.preventDefault(); pfDrop.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(evt => pfDrop.addEventListener(evt, e => { e.preventDefault(); pfDrop.classList.remove('drag'); }));
+pfDrop.addEventListener('drop', e => {
+  if (e.dataTransfer.files.length) { pfFileInput.files = e.dataTransfer.files; handlePfFile(e.dataTransfer.files[0]); }
+});
+pfFileInput.addEventListener('change', e => { if (e.target.files.length) handlePfFile(e.target.files[0]); });
+function handlePfFile(file){
+  if (file.size > 8 * 1024 * 1024) { alert('File is larger than 8MB — please attach a smaller file.'); return; }
+  const reader = new FileReader();
+  reader.onload = e => {
+    pfResumeData = { name: file.name, type: file.type, size: file.size, dataUrl: e.target.result };
+    pfDrop.classList.add('has-file');
+    document.getElementById('pf-drop-text').textContent = '✓ ' + file.name;
+  };
+  reader.readAsDataURL(file);
+}
+
+// wire up provider buttons, carrying ?return=candidate through if the user
+// arrived here from the Emploi app wanting to prefill their resume
+const returnTo = params.get('return') || 'connect';
+document.getElementById('linkedin-btn').href = `/api/auth/linkedin?return=${encodeURIComponent(returnTo)}`;
+document.getElementById('google-btn').href = `/api/auth/google?return=${encodeURIComponent(returnTo)}`;
+
+if (authError && ERRORS[authError]) {
+  showAlert(ERRORS[authError]);
+}
+
+let verifiedEmail = null;
+
+if (payload && sig) {
+  fetch(`/api/session?payload=${encodeURIComponent(payload)}&sig=${encodeURIComponent(sig)}`)
+    .then(r => r.ok ? r.json() : Promise.reject(r))
+    .then(profile => {
+      verifiedEmail = profile.email;
+      document.getElementById('signin-state').style.display = 'none';
+      document.getElementById('profile-state').classList.add('show');
+      document.getElementById('p-name').textContent = profile.name || 'Unnamed';
+      document.getElementById('p-email').textContent = profile.email || '';
+      document.getElementById('p-provider').textContent = profile.provider === 'google' ? 'Google' : 'LinkedIn';
+      if (profile.picture) {
+        document.getElementById('p-avatar').src = profile.picture;
+        document.getElementById('p-avatar').style.display = 'block';
+        document.getElementById('p-avatar-fallback').style.display = 'none';
+      } else {
+        document.getElementById('p-avatar-fallback').textContent = (profile.name || '?').charAt(0).toUpperCase();
+      }
+
+      // returning candidate? pull their saved profile from this browser
+      const existing = profile.email ? loadProfiles()[profile.email] : null;
+      if (existing) {
+        document.getElementById('profile-eyebrow').textContent = 'Welcome back';
+        document.getElementById('pf-title').value = existing.title || '';
+        document.getElementById('pf-skills').value = existing.skills || '';
+        document.getElementById('pf-location').value = existing.location || '';
+        if (existing.resume) {
+          pfResumeData = existing.resume;
+          pfDrop.classList.add('has-file');
+          document.getElementById('pf-drop-text').textContent = '✓ ' + existing.resume.name;
+        }
+      }
+
+      updateContinueLink();
+      // scrub the signed payload out of this page's own address bar
+      window.history.replaceState({}, '', 'connect.html');
+    })
+    .catch(() => showAlert('We couldn’t verify that sign-in. Please try again.'));
+}
+
+function updateContinueLink(){
+  document.getElementById('continue-btn').href = `index.html?view=candidate&payload=${encodeURIComponent(payload)}&sig=${encodeURIComponent(sig)}`;
+}
+
+document.getElementById('profile-form').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!verifiedEmail) return;
+  saveProfile(verifiedEmail, {
+    name: document.getElementById('p-name').textContent,
+    email: verifiedEmail,
+    picture: document.getElementById('p-avatar').src || null,
+    title: document.getElementById('pf-title').value,
+    skills: document.getElementById('pf-skills').value,
+    location: document.getElementById('pf-location').value,
+    resume: pfResumeData,
+    updatedAt: Date.now(),
+  });
+  const msg = document.getElementById('pf-msg');
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2400);
+});
+</script>
+</body>
+</html>
