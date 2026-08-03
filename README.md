@@ -43,6 +43,16 @@ Vercel serverless functions:
 - `api/session.js` — verifies the signed profile payload before the page
   trusts it (signed redirects expire after 5 minutes).
 
+After signing in, a candidate can fill in headline, skills, location, and
+resume — saved as a profile keyed to their verified email in
+`localStorage` under `emploi_candidate_profiles`. Signing in again with
+the same account shows a "Welcome back" state with that profile restored,
+and `index.html`'s resume form pulls all of it (not just name/email) when
+arriving via the sign-in handoff. Like the rest of this MVP, this profile
+data lives in the browser only — it doesn't sync across devices until a
+real backend replaces `localStorage` (see "To make it production-ready"
+above).
+
 ### 1. Register the OAuth apps
 - **LinkedIn**: [LinkedIn Developer Portal](https://www.linkedin.com/developers/apps) →
   Create app → add the **"Sign In with LinkedIn using OpenID Connect"**
