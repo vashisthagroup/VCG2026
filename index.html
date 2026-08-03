@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Emploi by VCG — Reverse Recruiting</title>
+<title>Vitae by VCG — AI-Powered Recruitment</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -224,10 +224,12 @@
 <div class="topbar">
   <div class="brand">
     <div class="mark">VG</div>
-    <div>Vashistha Group<div class="sub">Emploi Portal</div></div>
+    <div>Vashistha Group<div class="sub">Vitae Portal</div></div>
   </div>
   <div class="nav-links">
-    <button class="nav-btn active" data-view="home">Emploi</button>
+    <button class="nav-btn active" data-view="home">Vitae</button>
+    <a href="https://vitae.vercel.app" class="nav-btn" style="text-decoration:none;">Recruitment</a>
+    <a href="https://vitae.vercel.app/login?role=recruiter" class="nav-btn" style="text-decoration:none;">Admin</a>
     <button class="nav-btn" data-view="candidate">Candidate</button>
     <button class="nav-btn" data-view="client">Client</button>
     <button class="nav-btn" data-view="employee">Employee</button>
@@ -237,10 +239,10 @@
 <!-- ============ HOME ============ -->
 <section class="portal-section active" id="view-home">
   <div class="hero">
-    <div class="hero-badge">Now live as the Vashistha Group Emploi experience</div>
-    <div class="eyebrow">Reverse Recruiting</div>
+    <div class="hero-badge">Now live: Vitae by Vashistha Group</div>
+    <div class="eyebrow">AI-Powered Recruitment</div>
     <h1>Are you stuck in your <span class="strike">career?</span></h1>
-    <p class="lede">You've been applying, waiting, and hoping — but nothing's moving. Emploi by Vashistha Group does the heavy lifting for you: a dedicated recruiter working your search every day.</p>
+    <p class="lede">You've been applying, waiting, and hoping — but nothing's moving. Vitae by Vashistha Group does the heavy lifting for you: intelligent screening, instant scheduling, and comprehensive candidate evaluation powered by AI.</p>
     <div class="hero-cta">
       <button class="btn btn-primary" data-view="candidate">Submit my resume</button>
       <button class="btn btn-ghost" data-view="client">Post a job</button>
@@ -440,14 +442,14 @@
 </section>
 
 <footer>
-  <div class="mono">EMPLOI BY VCG · REVERSE RECRUITING · YOUR CAREER, ACCELERATED.</div>
+  <div class="mono">VITAE BY VCG · AI-POWERED RECRUITMENT · YOUR CAREER, ACCELERATED.</div>
 </footer>
 
 <div class="toast" id="toast"><span class="dot"></span><span id="toast-text">Saved</span></div>
 
 <script>
 // ---------- storage helpers ----------
-const STORE_KEYS = { candidates:'emploi_candidates', jobs:'emploi_jobs', referrals:'emploi_referrals' };
+const STORE_KEYS = { candidates:'vitae_candidates', jobs:'vitae_jobs', referrals:'vitae_referrals' };
 function load(key){ try{ return JSON.parse(localStorage.getItem(key)) || []; }catch(e){ return []; } }
 function save(key, data){ localStorage.setItem(key, JSON.stringify(data)); }
 function uid(){ return Math.random().toString(36).slice(2,9); }
